@@ -63,8 +63,8 @@ public class Main {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             restaurant.shutdownNow();
+        } finally {
+            restaurant.printStatistics();
         }
-
-        restaurant.printStatistics();
     }
 }
