@@ -4,10 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,7 +16,7 @@ public class Restaurant {
     private static final Logger logger = LoggerFactory.getLogger(Restaurant.class);
 
     private final AtomicInteger portionsCount;
-    private final LinkedBlockingQueue<Programmer> portionsAskQueue;
+    private final PriorityBlockingQueue<Programmer> portionsAskQueue;
 
     private final List<Programmer> programmersList;
     private final ExecutorService programmersExecutor;
@@ -29,7 +30,10 @@ public class Restaurant {
 
     public Restaurant(int programmersCount, int waiterCount, int portionsCount) {
         this.portionsCount = new AtomicInteger(portionsCount);
-        this.portionsAskQueue = new LinkedBlockingQueue<>();
+        this.portionsAskQueue = new PriorityBlockingQueue<>(
+                programmersCount,
+                Comparator.comparingInt(Programmer::getPortionsEaten)
+        );
         this.programmersList = new ArrayList<>();
         this.programmersExecutor = Executors.newFixedThreadPool(programmersCount);
         this.waitersCount = waiterCount;
@@ -95,7 +99,7 @@ public class Restaurant {
 
 
     public AtomicInteger getPortionsCount() { return portionsCount; }
-    public LinkedBlockingQueue<Programmer> getPortionsAskQueue() { return portionsAskQueue; }
+    public PriorityBlockingQueue<Programmer> getPortionsAskQueue() { return portionsAskQueue; }
     public List<Programmer> getProgrammersList() { return programmersList; }
     public DinningTable getDinningTable() { return dinningTable; }
     public boolean isRunning() { return isRunning; }
